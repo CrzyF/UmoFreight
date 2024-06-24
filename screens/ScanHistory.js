@@ -3,8 +3,6 @@ import { useState } from "react";
 import { Text, StyleSheet, View, Image, TextInput, TouchableOpacity } from "react-native";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
 
-import ScanItem from "./components/ScanItem";
-
 const ScanHistory = ({navigation}) => {
     const [search, setSearch] = useState('');
   return (
@@ -13,7 +11,8 @@ const ScanHistory = ({navigation}) => {
         UmoFreight tracking will keep 10 days history to keep all your scan
         history
       </Text>
-      <View style={[styles.phtruckBoldParent, styles.groupParentLayout]}>
+
+      <TouchableOpacity style={[styles.phtruckBoldParent, styles.groupParentLayout]} onPress={() => navigation.push('Tracking')}>
         <View style={styles.phtruckBold} />
         <View style={[styles.groupChild, styles.groupChildPosition]} />
         <Image
@@ -21,11 +20,15 @@ const ScanHistory = ({navigation}) => {
           contentFit="cover"
           source={require("../assets/rectangle-61.png")}
         />
+
+        <TouchableOpacity style={[styles.vectorIcon, styles.vectorIconLayout]} onPress={() => navigation.push('PrintPreview')}>
         <Image
-          style={[styles.vectorIcon, styles.vectorIconLayout]}
+          style={{ transform: [{ scale: 0.35 }] }}
           contentFit="cover"
           source={require("../assets/vector1.png")}
         />
+        </TouchableOpacity>
+
         <Text style={[styles.swivelChair, styles.qtyTypo1]}>Swivel Chair</Text>
         <Text style={styles.inTransit}> In-Transit</Text>
         <Text style={[styles.today1009, styles.today1009Position]}>
@@ -35,7 +38,8 @@ const ScanHistory = ({navigation}) => {
         <Text style={[styles.ty39yuh980ydgihcc, styles.textTypo]}>
           45TY39YUH980YDGIHCC
         </Text>
-      </View>
+      </TouchableOpacity>
+
       <Image
         style={[styles.vectorIcon1, styles.vectorIconLayout]}
         contentFit="cover"
@@ -172,23 +176,6 @@ const ScanHistory = ({navigation}) => {
         </View>
       </View>
 
-      <TouchableOpacity style={[styles.skipWrapper, styles.skipPosition1]}>
-        <View style={[styles.skip, styles.skipPosition]}>
-          <View style={styles.skipChild} />
-          <Text style={[styles.makePayment, styles.scanPosition]}>
-            Make Payment
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.skipContainer, styles.skipPosition]}>
-        <View style={[styles.skip, styles.skipPosition]}>
-          <View style={styles.skipChild} />
-          <Text style={[styles.serviceRequest, styles.scanPosition]}>
-            Service Request
-          </Text>
-        </View>
-      </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.push('ScanOptions')} style={[styles.skipFrame, styles.skipPosition1]}>
         <View style={[styles.skip, styles.skipPosition]}>
@@ -224,7 +211,7 @@ const styles = StyleSheet.create({
     maxHeight: "100%",
     maxWidth: "100%",
     position: "absolute",
-    overflow: "hidden",
+    overflow: "visible",
   },
   qtyTypo1: {
     height: 18,
@@ -250,7 +237,7 @@ const styles = StyleSheet.create({
   },
   textTypo: {
     textAlign: "left",
-    fontSize: 13,
+    fontSize: 10,
   },
   inTransit2Position: {
     left: 86,
@@ -269,16 +256,16 @@ const styles = StyleSheet.create({
   },
   skipPosition1: {
     width: 93,
-    top: 195,
+    top: 180,
     height: 34,
-    left: "50%",
+    left: "15%",
     position: "absolute",
   },
   skipPosition: {
     marginLeft: -46.5,
-    width: 93,
-    height: 34,
-    left: "50%",
+    width: 133,
+    height: 54,
+    left: "45%",
     position: "absolute",
   },
   scanPosition: {
@@ -327,9 +314,9 @@ const styles = StyleSheet.create({
   vectorIcon: {
     width: "4.82%",
     right: "8.78%",
-    left: "86.4%",
+    left: "82%",
     bottom: "64.11%",
-    top: "18.89%",
+    top: "1%",
     height: "17%",
     maxHeight: "100%",
     maxWidth: "100%",
@@ -442,7 +429,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   text: {
-    lineHeight: 14,
+    lineHeight: 17,
     color: "rgba(0, 0, 0, 0.25)",
     marginLeft: 7.77,
     fontFamily: FontFamily.poppinsRegular,
@@ -481,7 +468,7 @@ const styles = StyleSheet.create({
     right: "0%",
     bottom: "15.12%",
     left: "0%",
-    backgroundColor: '#012b45',
+    backgroundColor: '#F79520',
     borderRadius: 8,
     position: "absolute",
     width: "100%",
@@ -513,17 +500,17 @@ const styles = StyleSheet.create({
     marginLeft: -46.5,
   },
   scan: {
-    marginTop: -9.2,
-    marginLeft: -30.5,
-    fontSize: 14,
-    width: 37,
-    height: 19,
+    marginTop: -16.2,
+    marginLeft: -45.5,
+    fontSize: 24,
+    width: 57,
+    height: 29,
   },
   bxqrScanIcon: {
-    top: 9,
-    left: 58,
-    width: 17,
-    height: 17,
+    top: 13,
+    left: 88,
+    width: 27,
+    height: 27,
     position: "absolute",
     overflow: "hidden",
   },

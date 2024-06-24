@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     right: "0%",
     bottom: "0%",
     left: "0%",
-    backgroundColor: Color.colorDarkorange,
+    backgroundColor: Color.colorDarkorange_100,
     width: "100%",
   },
   skip1: {

@@ -99,8 +99,9 @@ north port fl 34286-2744`}</Text>
         source={require("../assets/image-1.png")}
       />
 
-      <TouchableOpacity style={[styles.vectorIcon1, styles.iconLayout]}>
+      <TouchableOpacity style={[styles.vectorIcon1, styles.iconLayout]} onPress={() => navigation.goBack()}>
       <Image
+        style={{ transform: [{ scale: 0.4 }] }}
         contentFit="cover"
         source={require("../assets/back.png")}
       />

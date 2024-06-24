@@ -9,18 +9,25 @@ const ScanOptions = ({navigation}) => {
       <TouchableOpacity style={[styles.skipWrapper, styles.skipLayout5]} onPress={() => navigation.push('Scanner')}>
         <View style={[styles.skip, styles.skipLayout5]}>
           <View style={[styles.skipChild, styles.skipBg]} />
-          <Text style={[styles.pickup, styles.pickupPosition]}>Pickup</Text>
+          <Text style={[styles.pickup, styles.pickupPosition]}>Warehouse</Text>
         </View>
       </TouchableOpacity>
 
       <TouchableOpacity style={[styles.skipContainer, styles.skipLayout]} onPress={() => navigation.push('Scanner')}>
         <View style={[styles.skip1, styles.skipLayout]}>
           <View style={[styles.skipItem, styles.skipBg]} />
-          <Text style={[styles.transport, styles.backTypo]}>Transport</Text>
+          <Text style={[styles.transport, styles.backTypo]}>Pickup</Text>
         </View>
       </TouchableOpacity>
 
       <TouchableOpacity style={[styles.skipFrame, styles.skipLayout5]} onPress={() => navigation.push('Scanner')}>
+        <View style={[styles.skip, styles.skipLayout5]}>
+          <View style={[styles.skipInner, styles.skipBg]} />
+          <Text style={[styles.delivery, styles.pickupPosition]}>Transit</Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.skipFrame1, styles.skipLayout5]} onPress={() => navigation.push('Scanner')}>
         <View style={[styles.skip, styles.skipLayout5]}>
           <View style={[styles.skipInner, styles.skipBg]} />
           <Text style={[styles.delivery, styles.pickupPosition]}>Delivery</Text>
@@ -162,6 +169,11 @@ const styles = StyleSheet.create({
     marginLeft: -98.5,
     height: 73,
   },
+  skipFrame1: {
+    top: 563,
+    marginLeft: -98.5,
+    height: 73,
+  },
   image1Icon: {
     marginLeft: -116.5,
     top: 66,
@@ -190,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   groupView: {
-    top: 654,
+    top: 754,
     marginLeft: -98.5,
     height: 73,
   },

@@ -1,13 +1,11 @@
-// HomeScreen.js
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Button, Image } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Audio } from 'expo-av';
+import { Camera } from 'expo-camera';
 
-const HomeScreen = ({ navigation }) => {
+export default function Scanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [sound, setSound] = useState();
 
   useEffect(() => {
     (async () => {
@@ -16,31 +14,10 @@ const HomeScreen = ({ navigation }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = async ({ type, data }) => {
+  const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    await playSound();
-    navigation.navigate('LiveStream', { scannedData: data });
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
-
-  const playSound = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      require('../assets/beep.mp3')
-    );
-    setSound(sound);
-
-    await sound.playAsync();
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (status.didJustFinish) {
-        navigation.navigate('Details', { scannedData: data });
-      }
-    });
-  };
-
-  useEffect(() => {
-    return sound ? () => {
-      sound.unloadAsync();
-    } : undefined;
-  }, [sound]);
 
   const renderCamera = () => {
     return (
@@ -75,7 +52,7 @@ const HomeScreen = ({ navigation }) => {
       {renderCamera()}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -93,7 +70,6 @@ const styles = StyleSheet.create({
   paragraph: {
     fontSize: 16,
     marginBottom: 40,
-    fontWeight: 'bold',
   },
   cameraContainer: {
     width: '80%',
@@ -105,6 +81,15 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
   },
+  button: {
+    backgroundColor: 'blue',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-
-export default HomeScreen;

@@ -3,7 +3,7 @@ import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import { FontFamily, FontSize, Color, Border } from "../GlobalStyles";
 import { Share } from "react-native";
 
-const Tracking = () => {
+const Tracking = ({navigation}) => {
 
   handleShare = () => {
     // Implement your share functionality here
@@ -14,6 +14,7 @@ const Tracking = () => {
   };
 
   return (
+    <TouchableOpacity onPress={() => navigation.push('Status')}>
     <View style={styles.packageDetailsParent}>
       <View style={[styles.packageDetails, styles.packageDetailsPosition]}>
         <Text style={styles.umofreightAutoTracker}>
@@ -88,6 +89,7 @@ const Tracking = () => {
 
       <TouchableOpacity style={[styles.vectorIcon2, styles.vectorIconLayout]}>
       <Image
+        style={{ transform: [{ scale: 0.4 }] }}
         contentFit="cover"
         source={require("../assets/vector2.png")}
       />
@@ -147,6 +149,7 @@ const Tracking = () => {
         />
       </View>
     </View>
+    </TouchableOpacity>
   );
 };
 
@@ -334,7 +337,7 @@ const styles = StyleSheet.create({
   },
   itemsFebruary: {
     top: 57,
-    width: 144,
+    width: 149,
   },
   vectorIcon: {
     width: "4.94%",
