@@ -23,7 +23,7 @@ const Stack = createStackNavigator();
 
 function AppNav() {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='ScanHistory'>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='LiveStream'>
         <Stack.Screen name='Onboarding1' component={Onboarding1} />
         <Stack.Screen name='Onboarding2' component={Onboarding2} />
         <Stack.Screen name='Onboarding3' component={Onboarding3} />

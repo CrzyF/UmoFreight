@@ -18,23 +18,32 @@
       "supportsTablet": true,
       "bundleIdentifier": "io.expo.client",
       "infoPlist": {
-        "NSCameraUsageDescription": "We need access to your camera for scanning QR codes.",
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We need access to your location to verify product location.",
         "NSLocationAlwaysUsageDescription": "We need access to your location to verify product location.",
-        "NSLocationWhenInUseUsageDescription": "We need access to your location to verify product location."
+        "NSLocationWhenInUseUsageDescription": "We need access to your location to verify product location.",
+        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone."
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff",
-        "permissions": ["CAMERA",
-                        "READ_EXTERNAL_STORAGE",
-                        "WRITE_EXTERNAL_STORAGE",
-                        "ACCESS_COARSE_LOCATION",
-                        "ACCESS_FINE_LOCATION"
+        "permissions": [
+          "CAMERA",
+          "READ_EXTERNAL_STORAGE",
+          "WRITE_EXTERNAL_STORAGE",
+          "ACCESS_COARSE_LOCATION",
+          "ACCESS_FINE_LOCATION"
         ]
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "io.expo.client"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -53,7 +62,20 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fd9cac62-df10-4299-9acd-5b4fd7d1287d"
+      }
+    }
   }
 }

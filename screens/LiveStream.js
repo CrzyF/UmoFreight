@@ -122,7 +122,7 @@ const LiveStream = ({ navigation }) => {
         alert('Image saved to camera roll');
 
         // Pass captured image URI along with other data to the EvidenceSubmission screen
-        navigation.navigate('ScanHistory', {
+        navigation.navigate('ScanDetails', {
           capturedImage: asset.uri,
           time: timeToWords(new Date()),
           date: dateToWords(new Date()),

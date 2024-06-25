@@ -2,20 +2,21 @@ import * as React from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { FontSize, Color, FontFamily, Border } from "../GlobalStyles";
 
-const ScanDetails = ({ navigation }) => {
+const ScanDetails = ({ navigation, route }) => {
+
+    const { capturedImage, date, time, location } = route.params;
+
     return (
         <View style={styles.scanDetails}>
-            <View style={styles.scanDetailsChild} />
-            <View style={styles.scanDetailsItem} />
             <Image
                 style={styles.image1Icon}
                 contentFit="cover"
                 source={require("../assets/image-1.png")}
             />
             <Text style={[styles.march82023, styles.march82023Typo]}>
-                March 8, 2023 9:59 AM
+                {date} {time}
             </Text>
-            <Text style={styles.onyankeleStreet}>5 Onyankele Street</Text>
+            <Text style={styles.onyankeleStreet}>{location}</Text>
             <Text style={[styles.of28, styles.of28Typo]}>14 of 28</Text>
             <Text style={[styles.totalScanned11, styles.octiconplay16Layout]}>
                 Total Scanned: 11
@@ -55,9 +56,9 @@ const ScanDetails = ({ navigation }) => {
             <Text style={[styles.of282, styles.of281Typo]}>1 of 28</Text>
             <Text style={[styles.of283, styles.of281Typo]}>3 of 28</Text>
             <Image
-                style={styles.scanDetailsChild1}
+                style={styles.scanDetailsChild}
                 contentFit="cover"
-                source={require("../assets/rectangle-81.png")}
+                source={{ uri: capturedImage  }} 
             />
             <Image
                 style={styles.groupIcon}
@@ -253,7 +254,6 @@ const ScanDetails = ({ navigation }) => {
                     <Text style={[styles.of285, styles.of284Typo]}>27 of 28</Text>
                 </View>
             </View>
-            <View style={styles.rectangleView} />
             <Text
                 style={[styles.of28Scan, styles.of28Typo]}
             >{`14 of 28 scan successfully `}</Text>
@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
         width: 311,
         height: 274,
         position: "absolute",
+        borderRadius: 8,
     },
     scanDetailsItem: {
         top: 301,
@@ -408,9 +409,9 @@ const styles = StyleSheet.create({
     onyankeleStreet: {
         marginLeft: -82.5,
         top: 143,
-        height: 25,
+        height: 55,
         width: 165,
-        textAlign: "left",
+        textAlign: "center",
         color: Color.colorDarkslategray_100,
         fontFamily: FontFamily.interBold,
         fontWeight: "700",
@@ -420,7 +421,7 @@ const styles = StyleSheet.create({
     },
     of28: {
         marginLeft: -34.5,
-        top: 235,
+        top: 205,
         width: 69,
         color: Color.colorDarkslategray_100,
         fontFamily: FontFamily.interMedium,
