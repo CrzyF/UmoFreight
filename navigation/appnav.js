@@ -23,7 +23,7 @@ const Stack = createStackNavigator();
 
 function AppNav() {
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='LiveStream'>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='ScanHistory'>
         <Stack.Screen name='Onboarding1' component={Onboarding1} />
         <Stack.Screen name='Onboarding2' component={Onboarding2} />
         <Stack.Screen name='Onboarding3' component={Onboarding3} />
@@ -35,13 +35,13 @@ function AppNav() {
         <Stack.Screen name='ResetPassword' component={ResetPassword} />
         <Stack.Screen name='ScanHistory' component={ScanHistory} />
         <Stack.Screen name='ScanOptions' component={ScanOptions} />
-        <Stack.Screen name='PrintPreview' component={PrintPreview} />
         <Stack.Screen name='Tracking' component={Tracking} />
         <Stack.Screen name='Scanner' component={Scanner} />
         <Stack.Screen name='LiveStream' component={LiveStream} />
         <Stack.Screen name='ScanDetails' component={ScanDetails} />
         <Stack.Screen name='ShipmentPreview' component={ShipmentPreview} />
         <Stack.Screen name='Status' component={Status} />
+        <Stack.Screen name='PrintPreview' component={PrintPreview} />
         </Stack.Navigator>
     );
 }

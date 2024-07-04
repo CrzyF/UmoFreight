@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Audio } from 'expo-av';
+import { useNavigation,CommonActions } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
+const Scanner = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [sound, setSound] = useState();
-
+  
+ 
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -18,8 +20,20 @@ const HomeScreen = ({ navigation }) => {
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     await playSound();
-    navigation.navigate('LiveStream', { scannedData: data });
+    navigation.navigate('LiveStream', { scannedData: data, isCameraReady_: true });
   };
+  const toNext=()=>{
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [
+          { name: 'Scanner' }, // Or any other screen you want to navigate to first
+          { name: 'LiveStream' }, // The screen you want to restart
+        ],
+      })
+    );
+
+  }
 
   const playSound = async () => {
     const { sound } = await Audio.Sound.createAsync(
@@ -30,7 +44,7 @@ const HomeScreen = ({ navigation }) => {
     await sound.playAsync();
     sound.setOnPlaybackStatusUpdate((status) => {
       if (status.didJustFinish) {
-        navigation.navigate('Details', { scannedData: data });
+        setScanned(false);
       }
     });
   };
@@ -106,4 +120,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Scanner;

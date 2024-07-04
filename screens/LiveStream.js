@@ -1,24 +1,36 @@
 import * as React from "react";
 import { useState, useRef, useEffect } from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, AppState } from "react-native";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
 import { Camera, CameraType } from 'expo-camera/legacy';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import * as MediaLibrary from 'expo-media-library';
-import { PinchGestureHandler, State } from 'react-native-gesture-handler';
+import { PinchGestureHandler } from 'react-native-gesture-handler';
+import { useFocusEffect } from "@react-navigation/native";
 
-const LiveStream = ({ navigation }) => {
+const LiveStream = ({ navigation, route }) => {
+  const { scannedData, isCameraReady: initialCameraReadyState } = route.params || {};
+  const [appState, setAppState] = useState(AppState.currentState);
 
+  const cameraReady = route.params?.isCameraReady_;
+  console.log(cameraReady)
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [locationAddress, setLocationAddress] = useState('');
   const [type, setType] = useState(CameraType.back);
   const cameraRef = useRef(null);
-  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(initialCameraReadyState || false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [permission, requestPermission ] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [zoom, setZoom] = useState(0);
+  const zoomSensitivity = 0.1;
+  const [permission_,setPermission]=useState("")
 
+
+
+  
   useEffect(() => {
     (async () => {
       const { status } = await requestPermission();
@@ -30,6 +42,8 @@ const LiveStream = ({ navigation }) => {
     })();
   }, []);
 
+  
+   
 
   useEffect(() => {
     (async () => {
@@ -65,6 +79,7 @@ const LiveStream = ({ navigation }) => {
         setErrorMsg('Error getting location');
       }
     })();
+
   }, []);
 
   const dateToWords = (date) => {
@@ -72,35 +87,16 @@ const LiveStream = ({ navigation }) => {
     return date.toLocaleDateString(undefined, options);
   };
 
-  useEffect(() => {
-    // Update the current time every second
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    // Clear the interval when the component unmounts
-    return () => clearInterval(interval);
-  }, []);
+   
 
   const timeToWords = (time) => {
     const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
     return time.toLocaleTimeString(undefined, options);
   };
 
-  function toggleCameraType() {
+  const toggleCameraType = () => {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
-  }
-
-  const [capturedImage, setCapturedImage] = useState(null);
-
-  useEffect(() => { 
-    (async () => {
-      const { status } = await requestPermission();
-      if (status !== 'granted') {
-        alert('Permission denied');
-      }
-    })();
-  }, []);
+  };
 
   const handleCaptureImage = async () => {
     if (cameraRef.current) {
@@ -119,157 +115,110 @@ const LiveStream = ({ navigation }) => {
 
       try {
         const asset = await MediaLibrary.createAssetAsync(uri);
-        alert('Image saved to camera roll');
+        alert('Image successfully taken');
 
-        // Pass captured image URI along with other data to the EvidenceSubmission screen
-        navigation.navigate('ScanDetails', {
+        navigation.replace('ScanDetails', {
           capturedImage: asset.uri,
           time: timeToWords(new Date()),
           date: dateToWords(new Date()),
           location: locationAddress,
+          scannedData
         });
       } catch (error) {
-        console.error('Error saving image to camera roll:', error);
+        console.error('Error taking image:', error);
       }
     }
   };
 
-  const [zoom, setZoom] = useState(0);
-
-  const zoomSensitivity = 0.1
-
-  // const handleZoom = zoomFactor => {
-  //   const newZoom = Math.max(0, Math.min(1, zoom + zoomFactor)); // Clamp the new zoom value between 0 and 1
-  //   setZoom(newZoom);
-  // };
-
   const newZoom = (event) => {
     const deltaScale = event.nativeEvent.scale - 1;
     const size = zoom + deltaScale * zoomSensitivity;
-     setZoom(Math.max(0, Math.min(size, 1)));
+    setZoom(Math.max(0, Math.min(size, 1)));
   };
 
-  // const onPinchGestureEvent = event => {
-  //   const zoomFactor = event.nativeEvent.scale - 1; // Calculate the zoom factor based on pinch gesture scale
-  //   if (event.nativeEvent.state === State.ACTIVE) {
-  //     handleZoom(zoomFactor);
-  //   }
-  // };
+  const renderCamera = () => {
+    return (
+      <Camera
+        ref={cameraRef}
+        style={styles.liveStreamIcon}
+        onCameraReady={() => setIsCameraReady(true)}
+        type={type}
+        zoom={zoom}>
 
-  // const [flashMode, setFlashMode] = useState(FlashMode.off);
+        {capturedImage &&
+          <Image
+            source={{ uri: capturedImage }}
+            style={{ width: 100, height: 100 }}
+          />
+        }
 
-  // const toggleFlashMode = () => {
-  //   setFlashMode(prevMode => {
-  //     switch (prevMode) {
-  //       case FlashMode.off:
-  //         return FlashMode.on;
-  //       case FlashMode.on:
-  //         return FlashMode.auto;
-  //       case FlashMode.auto:
-  //         return FlashMode.off;
-  //       default:
-  //         return FlashMode.off;
-  //     }
-  //   });
-  // };
+        <PinchGestureHandler onGestureEvent={newZoom}>
+          <View style={styles.controls} collapsable={false} />
+        </PinchGestureHandler>
+
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <View style={styles.image6} />
+          <View style={[styles.rectangleParent, styles.groupChildLayout]}>
+            <View style={[styles.groupChild, styles.groupChildLayout]} />
+            <Image
+              style={[styles.vectorIcon, styles.iconLayout]}
+              contentFit="cover"
+              source={require("../assets/vector4.png")}
+            />
+          </View>
+        </TouchableOpacity>
+
+        {location ? (
+          <>
+            <Text style={styles.march820232}>
+              {timeToWords(currentTime)}
+            </Text>
+
+            <Text style={styles.march820231}>
+              {dateToWords(new Date(location.timestamp))}
+            </Text>
+
+            <Text style={styles.march82023}>
+              {locationAddress || 'Address not available'}
+            </Text>
+          </>
+        ) : (
+          <View>
+            <Text style={styles.march82023}>Capturing GPS Coordinates, Date & Time...</Text>
+          </View>
+        )}
+
+        <TouchableOpacity onPress={handleCaptureImage} style={[styles.iconLayout, styles.circle]}>
+          <View />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.push('ScanDetails')} style={[styles.iconLayout, styles.rectangle]}>
+          <Text style={styles.Skip}>Skip</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.groupIcon, styles.iconLayout]} onPress={toggleCameraType}>
+          <Image
+            contentFit="cover"
+            source={require("../assets/flipcamera.png")}
+          />
+        </TouchableOpacity>
+
+        <Text style={[styles.photo, styles.liveTypo]}>PHOTO</Text>
+        <Text style={[styles.video, styles.liveTypo]}>VIDEO</Text>
+      </Camera>
+    );
+
+  }
 
   return (
-
-    <Camera
-      ref={cameraRef}
-      style={styles.liveStreamIcon}
-      onCameraReady={() => setIsCameraReady(true)}
-      type={type}
-      zoom={zoom}>
-
-      {capturedImage &&
-        <Image
-          source={{ uri: capturedImage }}
-          style={{ width: 100, height: 100 }}
-        />
+    <View style={{ flex: 1 }}>
+      {
+        cameraReady && renderCamera()
       }
 
-      <PinchGestureHandler onGestureEvent={newZoom}>
-        <View style={styles.controls} collapsable={false} />
-      </PinchGestureHandler>
+    </View>
+  )
 
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <View style={styles.image6} />
-        <View style={[styles.rectangleParent, styles.groupChildLayout]}>
-          <View style={[styles.groupChild, styles.groupChildLayout]} />
-          <Image
-            style={[styles.vectorIcon, styles.iconLayout]}
-            contentFit="cover"
-            source={require("../assets/vector4.png")}
-          />
-        </View>
-      </TouchableOpacity>
-
-      {location ? (
-        <>
-          <Text style={styles.march820232}>
-            {timeToWords(currentTime)}
-          </Text>
-
-          <Text style={styles.march820231}>
-            {dateToWords(new Date(location.timestamp))}
-          </Text>
-
-          <Text style={styles.march82023}>
-            {locationAddress || 'Address not available'}
-          </Text>
-        </>
-      ) : (
-        <View>
-
-          <Text style={styles.march82023}>Capturing GPS Co-ordinates, Date & Time...</Text>
-
-          {/* <View style={[styles.iconLayout, styles.circle]} /> */}
-
-        </View>
-      )}
-
-
-      {/* <TouchableOpacity onPress={handleCaptureImage} style={[styles.liveStreamChild, styles.iconLayout]} disabled={!location}>
-       <Image
-        style={{ transform: [{ scale: 0.35 }] }}
-        contentFit="cover"
-        source={require("../assets/ellipse-32.png")}
-       />
-     </TouchableOpacity> */}
-
-     <TouchableOpacity onPress={handleCaptureImage} style={[styles.iconLayout, styles.circle]}>
-        <View />
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.push('ScanDetails')} style={[styles.iconLayout, styles.rectangle]}>
-        <Text style={styles.Skip}>Skip</Text>
-      </TouchableOpacity>
-
-
-      <TouchableOpacity style={[styles.groupIcon, styles.iconLayout]} onPress={toggleCameraType}>
-
-        <Image
-          contentFit="cover"
-          source={require("../assets/flipcamera.png")}
-        />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.vectorIcon1, styles.iconLayout]} >
-
-        <Image
-          style={{ transform: [{ scale: 0.35 }] }}
-          contentFit="cover"
-          source={require("../assets/vector5.png")}
-        />
-      </TouchableOpacity>
-
-      <Text style={[styles.photo, styles.liveTypo]}>PHOTO</Text>
-      <Text style={[styles.video, styles.liveTypo]}>VIDEO</Text>
-
-
-    </Camera>
-  );
 };
 
 const styles = StyleSheet.create({
@@ -285,7 +234,7 @@ const styles = StyleSheet.create({
     left: "40%",
     width: 68,
     height: 68,
-    position: "relative", 
+    position: "relative",
     zIndex: 40
   },
   rectangle: {
@@ -295,7 +244,7 @@ const styles = StyleSheet.create({
     left: "15%",
     width: 68,
     height: 38,
-    position: "relative", 
+    position: "relative",
     zIndex: 40
   },
   iconLayout: {
@@ -306,6 +255,7 @@ const styles = StyleSheet.create({
   },
   liveTypo: {
     top: '80%',
+    width: 200,
     height: 12,
     textAlign: "left",
     color: Color.colorWhite,
@@ -317,8 +267,7 @@ const styles = StyleSheet.create({
     overflow: "visible"
   },
   Skip: {
-    top: '10%',
-    left: "14%",
+    left: "20%",
     height: 32,
     textAlign: "center",
     color: Color.colorWhite,
@@ -400,12 +349,12 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   groupIcon: {
-    height: "4.21%",
-    width: "10.43%",
-    top: "88%",
+    height: "6.21%",
+    width: "12.43%",
+    top: "87%",
     right: "23.16%",
     bottom: "7.76%",
-    left: "60%",
+    left: "65%",
   },
   vectorIcon1: {
     height: "2.82%",
@@ -417,6 +366,7 @@ const styles = StyleSheet.create({
   },
   video: {
     left: 213,
+    width: 200,
   },
   live: {
     left: 267,
