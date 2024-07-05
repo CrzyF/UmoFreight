@@ -14,7 +14,6 @@ const LiveStream = ({ navigation, route }) => {
   const [appState, setAppState] = useState(AppState.currentState);
 
   const cameraReady = route.params?.isCameraReady_;
-  console.log(cameraReady)
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [locationAddress, setLocationAddress] = useState('');
@@ -27,8 +26,6 @@ const LiveStream = ({ navigation, route }) => {
   const [zoom, setZoom] = useState(0);
   const zoomSensitivity = 0.1;
   const [permission_,setPermission]=useState("")
-
-
 
   
   useEffect(() => {

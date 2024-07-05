@@ -1,20 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList } from "react-native";
 import { FontSize, Color, FontFamily, Border } from "../GlobalStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ScanDetails = ({ navigation, route }) => {
     const [scannedItems, setScannedItems] = useState([]);
 
     useEffect(() => {
+        // Load scanned items from AsyncStorage when the component mounts
+        const loadScannedItems = async () => {
+            try {
+                const storedScannedItems = await AsyncStorage.getItem('scannedItems');
+                if (storedScannedItems) {
+                    setScannedItems(JSON.parse(storedScannedItems));
+                }
+            } catch (error) {
+                console.error('Failed to load scanned items from storage:', error);
+            }
+        };
+
+        loadScannedItems();
+    }, []);
+
+    useEffect(() => {
         if (route.params) {
             const { capturedImage, date, time, location, scannedData } = route.params;
             const newScan = { capturedImage, date, time, location, scannedData };
-            setScannedItems(prevItems => [...prevItems, newScan]);
+            const updatedScannedItems = [...scannedItems, newScan];
+            setScannedItems(updatedScannedItems);
+
+            // Save the updated scanned items to AsyncStorage
+            const saveScannedItems = async () => {
+                try {
+                    await AsyncStorage.setItem('scannedItems', JSON.stringify(updatedScannedItems));
+                } catch (error) {
+                    console.error('Failed to save scanned items to storage:', error);
+                }
+            };
+
+            saveScannedItems();
         }
     }, [route.params]);
 
     const handleNext = () => {
-        navigation.push('Scanner', { scannedItems });
+        navigation.push('Scanner');
     };
 
     const handleFinish = () => {
