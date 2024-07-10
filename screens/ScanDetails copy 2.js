@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { FontSize, Color, FontFamily, Border } from "../GlobalStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ScanDetails = ({ navigation, route }) => {
 

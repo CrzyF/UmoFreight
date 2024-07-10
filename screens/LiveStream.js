@@ -97,35 +97,34 @@ const LiveStream = ({ navigation, route }) => {
 
   const handleCaptureImage = async () => {
     if (cameraRef.current) {
-      const options = {
-        mediaType: 'photo',
-        quality: 1,
-      };
+        const options = {
+            mediaType: 'photo',
+            quality: 1,
+        };
 
-      const { status } = await requestPermission();
-      if (status !== 'granted') {
-        alert('Permission denied');
-        return;
-      }
+        const { status } = await requestPermission();
+        if (status !== 'granted') {
+            alert('Permission denied');
+            return;
+        }
 
-      const { uri } = await cameraRef.current.takePictureAsync();
+        const { uri } = await cameraRef.current.takePictureAsync();
 
-      try {
-        const asset = await MediaLibrary.createAssetAsync(uri);
-        alert('Image successfully taken');
+        try {
 
-        navigation.replace('ScanDetails', {
-          capturedImage: asset.uri,
-          time: timeToWords(new Date()),
-          date: dateToWords(new Date()),
-          location: locationAddress,
-          scannedData
-        });
-      } catch (error) {
-        console.error('Error taking image:', error);
-      }
+            navigation.replace('ScanDetails', {
+                capturedImage: uri,
+                time: timeToWords(new Date()),
+                date: dateToWords(new Date()),
+                location: locationAddress,
+                scannedData
+            });
+        } catch (error) {
+            console.error('Error taking image:', error);
+        }
     }
-  };
+};
+
 
   const newZoom = (event) => {
     const deltaScale = event.nativeEvent.scale - 1;
@@ -200,8 +199,7 @@ const LiveStream = ({ navigation, route }) => {
           />
         </TouchableOpacity>
 
-        <Text style={[styles.photo, styles.liveTypo]}>PHOTO</Text>
-        <Text style={[styles.video, styles.liveTypo]}>VIDEO</Text>
+        {/* <Text style={[styles.photo, styles.liveTypo]}>PHOTO</Text> */}
       </Camera>
     );
 
@@ -375,7 +373,7 @@ const styles = StyleSheet.create({
   liveStreamIcon: {
     flex: 1,
     width: "100%",
-    height: 852,
+    height: "100%",
   },
 });
 

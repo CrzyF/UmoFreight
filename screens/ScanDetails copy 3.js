@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList } from "react-native";
-import { FontSize, Color, FontFamily } from "../GlobalStyles";
+import { FontSize, Color, FontFamily, Border } from "../GlobalStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ScanDetails = ({ navigation, route }) => {
@@ -58,25 +58,12 @@ const ScanDetails = ({ navigation, route }) => {
         </View>
     );
 
-    const lastScannedItem = scannedItems.length > 0 ? scannedItems[scannedItems.length - 1] : null;
-
     return (
         <View style={styles.container}>
             <Image
                 style={styles.image1Icon}
-                contentFit="cover"
                 source={require("../assets/image-1.png")}
             />
-
-            {lastScannedItem && (
-                <>
-                    <Text style={[styles.march82023, styles.march82023Typo]}>
-                        {lastScannedItem.date} {lastScannedItem.time}
-                    </Text>
-                    <Text style={styles.onyankeleStreet}>{lastScannedItem.location}</Text>
-                </>
-            )}
-
             <Text style={styles.of28}>14 of 28</Text>
             <Text style={styles.totalScanned11}>Total Scanned: {scannedItems.length}</Text>
 
@@ -100,42 +87,10 @@ const ScanDetails = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-    march82023Typo: {
-        textAlign: "left",
-        fontSize: FontSize.size_mid_4,
-        color: Color.colorDarkslategray_100,
-        left: "50%",
-    },
-    march82023: {
-        marginLeft: "-30%",
-        top: 121,
-        width: 303,
-        height: 25,
-        fontFamily: FontFamily.interBold,
-        fontWeight: "700",
-        textAlign: "center",
-        fontSize: FontSize.size_mid_4,
-        position: "absolute",
-    },
-    onyankeleStreet: {
-        marginLeft: -82.5,
-        top: 143,
-        height: 55,
-        width: 165,
-        textAlign: "center",
-        color: Color.colorDarkslategray_100,
-        fontFamily: FontFamily.interBold,
-        fontWeight: "700",
-        fontSize: FontSize.size_mid_4,
-        left: "50%",
-        position: "absolute",
-    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     button: {
         width: 150,
@@ -161,11 +116,12 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
     image1Icon: {
+        marginLeft: -115.5,
+        top: 67,
         width: 233,
         height: 26,
-        borderRadius: 8,
-        alignSelf: 'center',
-        marginVertical: 70,
+        left: "50%",
+        position: "absolute",
     },
     of28: {
         fontFamily: FontFamily.interMedium,
@@ -173,17 +129,16 @@ const styles = StyleSheet.create({
         fontSize: FontSize.size_mid_4,
         color: Color.colorLimegreen,
         textAlign: "center",
-        marginTop: 50,
     },
     totalScanned11: {
         color: Color.colorDarkslategray_100,
-        width: '100%',
-        textAlign: 'center',
+        width: 200,
+        height: 25,
         fontFamily: FontFamily.interBold,
         fontWeight: "700",
+        textAlign: "center",
         fontSize: FontSize.size_mid_4,
-        marginVertical: 60,
-        marginTop: 150,
+        marginVertical: 10,
     },
     listContainer: {
         paddingVertical: 10,

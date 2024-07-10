@@ -84,7 +84,7 @@ const Scanner = ({ navigation }) => {
         style={styles.title}
         source={require('../assets/image-1.png')}
       />
-      <Text style={styles.paragraph}>Scan QR To Begin</Text>
+      <Text style={styles.paragraph}>Scan Shipping Label QR Code </Text>
       {renderCamera()}
     </View>
   );
