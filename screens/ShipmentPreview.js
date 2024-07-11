@@ -1,9 +1,21 @@
-import React from "react";
-import { Text, StyleSheet, View, Image, TouchableOpacity, TextInput, FlatList } from "react-native";
+import React, { useState } from "react";
+import { Text, StyleSheet, View, Image, TouchableOpacity, FlatList } from "react-native";
+import Dialog from "react-native-dialog";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
 
 const ShipmentPreview = ({ navigation, route }) => {
   const { scannedItems } = route.params;
+  const [isDialogVisible, setDialogVisible] = useState(false);
+  const [additionalInfo, setAdditionalInfo] = useState('');
+
+  const toggleDialog = () => {
+    setDialogVisible(!isDialogVisible);
+  };
+
+  const handleAddInfo = () => {
+    console.log("Additional info:", additionalInfo);
+    setDialogVisible(false);
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -51,7 +63,7 @@ const ShipmentPreview = ({ navigation, route }) => {
         UmoFreight Auto Tracker
       </Text>
 
-      <TouchableOpacity style={styles.delayedPackagesChild} onPress={() => navigation.push('ScanHistory')}>
+      <TouchableOpacity style={styles.delayedPackagesChild} onPress={toggleDialog}>
         <Image
           style={{ transform: [{ scale: 0.3 }] }}  
           contentFit="cover"
@@ -62,6 +74,17 @@ const ShipmentPreview = ({ navigation, route }) => {
       <Text style={styles.submit}>SUBMIT</Text>
 
       <Text style={styles.of285}>{scannedItems.length} of {scannedItems.length}</Text>
+
+      <Dialog.Container visible={isDialogVisible}>
+        <Dialog.Title>Additional Information / Notes</Dialog.Title>
+        <Dialog.Input
+          placeholder="Location Reference eg. container #, name"
+          value={additionalInfo}
+          onChangeText={setAdditionalInfo}
+        />
+        <Dialog.Button label="Add" onPress={handleAddInfo} />
+        <Dialog.Button label="Skip" onPress={toggleDialog} />
+      </Dialog.Container>
     </View>
   );
 };
@@ -118,7 +141,7 @@ const styles = StyleSheet.create({
   locatedLondon: {
     height: 18,
     color: Color.colorBlack,
-    width: 158,
+    width: 258,
     textAlign: "left",
     fontFamily: FontFamily.interRegular,
     left: 84,
