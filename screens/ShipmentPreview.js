@@ -101,7 +101,7 @@ const ShipmentPreview = ({ navigation, route }) => {
         <Dialog.Description>
           Tracking Successfully Submitted
         </Dialog.Description>
-        <Dialog.Button label="OK" onPress={() => navigation.push('ScanHistory')} />
+        <Dialog.Button label="Done" onPress={() => navigation.push('ScanHistory')} />
       </Dialog.Container>
     </View>
   );
