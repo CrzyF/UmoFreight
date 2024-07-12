@@ -6,6 +6,7 @@ import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
 const ShipmentPreview = ({ navigation, route }) => {
   const { scannedItems } = route.params;
   const [isDialogVisible, setDialogVisible] = useState(false);
+  const [isSuccessDialogVisible, setSuccessDialogVisible] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState('');
 
   const toggleDialog = () => {
@@ -15,6 +16,15 @@ const ShipmentPreview = ({ navigation, route }) => {
   const handleAddInfo = () => {
     console.log("Additional info:", additionalInfo);
     setDialogVisible(false);
+  };
+
+  const handleSkip = () => {
+    setDialogVisible(false);
+    setSuccessDialogVisible(true);
+  };
+
+  const handleSuccessDialogClose = () => {
+    setSuccessDialogVisible(false);
   };
 
   const renderItem = ({ item }) => (
@@ -83,7 +93,15 @@ const ShipmentPreview = ({ navigation, route }) => {
           onChangeText={setAdditionalInfo}
         />
         <Dialog.Button label="Add" onPress={handleAddInfo} />
-        <Dialog.Button label="Skip" onPress={toggleDialog} />
+        <Dialog.Button label="Skip" onPress={handleSkip} />
+      </Dialog.Container>
+
+      <Dialog.Container visible={isSuccessDialogVisible}>
+        <Dialog.Title>Success</Dialog.Title>
+        <Dialog.Description>
+          Tracking Successfully Submitted
+        </Dialog.Description>
+        <Dialog.Button label="OK" onPress={() => navigation.push('ScanHistory')} />
       </Dialog.Container>
     </View>
   );
