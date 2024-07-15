@@ -37,13 +37,13 @@
           "ACCESS_FINE_LOCATION"
         ]
       },
+      "package": "com.c75y_f.umofreight",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ],
-      "package": "io.expo.client"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -68,6 +68,7 @@
       "eas": {
         "projectId": "fd9cac62-df10-4299-9acd-5b4fd7d1287d"
       }
-    }
+    },
+    "owner": "c75y_f"
   }
 }
