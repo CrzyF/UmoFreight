@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList, TextInput } from "react-native";
 import { FontSize, Color, FontFamily } from "../GlobalStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ScanDetails = ({ navigation, route }) => {
     const [scannedItems, setScannedItems] = useState([]);
+    const [inputText, setInputText] = useState('');
 
     useEffect(() => {
         const loadScannedItems = async () => {
@@ -94,6 +95,13 @@ const ScanDetails = ({ navigation, route }) => {
                 keyExtractor={(item, index) => index.toString()}
                 horizontal={true}
                 contentContainerStyle={styles.listContainer}
+            />
+
+            <TextInput
+                style={styles.textInput}
+                placeholder="Enter additional information"
+                value={inputText}
+                onChangeText={setInputText}
             />
         </View>
     );
@@ -203,6 +211,14 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         color: Color.colorDarkgray_100,
         fontSize: FontSize.size_4xs,
+    },
+    textInput: {
+        width: '90%',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 10,
+        marginTop: 20,
     },
 });
 
