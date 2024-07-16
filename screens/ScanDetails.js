@@ -213,12 +213,13 @@ const styles = StyleSheet.create({
         fontSize: FontSize.size_4xs,
     },
     textInput: {
-        width: '90%',
+        width: '95%',
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 10,
         padding: 10,
-        marginTop: 20,
+        marginTop: 10,
+        top: -90
     },
 });
 
