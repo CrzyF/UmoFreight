@@ -8,6 +8,7 @@ import axios from 'axios';
 import * as MediaLibrary from 'expo-media-library';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LiveStream = ({ navigation, route }) => {
   const { scannedData, isCameraReady: initialCameraReadyState } = route.params || {};
@@ -25,9 +26,9 @@ const LiveStream = ({ navigation, route }) => {
   const [capturedImage, setCapturedImage] = useState(null);
   const [zoom, setZoom] = useState(0);
   const zoomSensitivity = 0.1;
-  const [permission_,setPermission]=useState("")
+  const [permission_, setPermission] = useState("")
 
-  
+
   useEffect(() => {
     (async () => {
       const { status } = await requestPermission();
@@ -39,8 +40,27 @@ const LiveStream = ({ navigation, route }) => {
     })();
   }, []);
 
-  
-   
+  const saveData = async (newData) => {
+
+    await AsyncStorage.getItem("scannedData").then(data => {
+
+      const dataExisting = data == null ? [] : JSON.parse(data);
+
+      const allData = [...dataExisting, newData];
+
+      console.log("No. items" + allData.length)
+      AsyncStorage.setItem("scannedData", JSON.stringify(allData)).then(() => {
+        navigation.replace("ScanDetails")
+      })
+
+      console.log(allData)
+    }).catch(e => {
+      console.log("Error saving..." + e)
+    }).finally(() => {
+      console.log("It's saved...")
+    })
+
+  }
 
   useEffect(() => {
     (async () => {
@@ -48,6 +68,7 @@ const LiveStream = ({ navigation, route }) => {
         console.error('Location is not available. Make sure expo-location is installed.');
         return;
       }
+      // saveData()
 
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -84,8 +105,6 @@ const LiveStream = ({ navigation, route }) => {
     return date.toLocaleDateString(undefined, options);
   };
 
-   
-
   const timeToWords = (time) => {
     const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
     return time.toLocaleTimeString(undefined, options);
@@ -95,35 +114,40 @@ const LiveStream = ({ navigation, route }) => {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   };
 
+
+
   const handleCaptureImage = async () => {
     if (cameraRef.current) {
-        const options = {
-            mediaType: 'photo',
-            quality: 1,
-        };
+      const options = {
+        mediaType: 'photo',
+        quality: 1,
+      };
 
-        const { status } = await requestPermission();
-        if (status !== 'granted') {
-            alert('Permission denied');
-            return;
+      const { status } = await requestPermission();
+      if (status !== 'granted') {
+        alert('Permission denied');
+        return;
+      }
+
+      const { uri } = await cameraRef.current.takePictureAsync();
+
+      try {
+
+        const newData = {
+          capturedImage: uri,
+          time: timeToWords(new Date()),
+          date: dateToWords(new Date()),
+          location: locationAddress,
+          scannedData
         }
 
-        const { uri } = await cameraRef.current.takePictureAsync();
-
-        try {
-
-            navigation.replace('ScanDetails', {
-                capturedImage: uri,
-                time: timeToWords(new Date()),
-                date: dateToWords(new Date()),
-                location: locationAddress,
-                scannedData
-            });
-        } catch (error) {
-            console.error('Error taking image:', error);
-        }
+        saveData(newData)
+        // navigation.replace('ScanDetails');
+      } catch (error) {
+        console.error('Error taking image:', error);
+      }
     }
-};
+  };
 
 
   const newZoom = (event) => {

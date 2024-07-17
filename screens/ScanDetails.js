@@ -2,44 +2,41 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList, TextInput } from "react-native";
 import { FontSize, Color, FontFamily } from "../GlobalStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from '@react-navigation/native';
 
 const ScanDetails = ({ navigation, route }) => {
     const [scannedItems, setScannedItems] = useState([]);
     const [inputText, setInputText] = useState('');
 
-    useEffect(() => {
-        const loadScannedItems = async () => {
-            try {
-                const storedScannedItems = await AsyncStorage.getItem('scannedItems');
-                if (storedScannedItems) {
-                    setScannedItems(JSON.parse(storedScannedItems));
-                }
-            } catch (error) {
-                console.error('Failed to load scanned items from storage:', error);
-            }
-        };
-
-        loadScannedItems();
-    }, []);
+    
 
     useEffect(() => {
-        if (route.params) {
-            const { capturedImage, date, time, location, scannedData } = route.params;
-            const newScan = { capturedImage, date, time, location, scannedData };
-            const updatedScannedItems = [...scannedItems, newScan];
-            setScannedItems(updatedScannedItems);
+        // if (route.params) {
+        // const { capturedImage, date, time, location, scannedData } = route.params;
+        // const newScan = { capturedImage, date, time, location, scannedData };
+        // const updatedScannedItems = [...scannedItems, newScan];
+        // setScannedItems(updatedScannedItems);
 
-            const saveScannedItems = async () => {
-                try {
-                    await AsyncStorage.setItem('scannedItems', JSON.stringify(updatedScannedItems));
-                } catch (error) {
-                    console.error('Failed to save scanned items to storage:', error);
-                }
-            };
+        // const saveScannedItems = async () => {
+        //     try {
+        //         await AsyncStorage.setItem('scannedItems', JSON.stringify(updatedScannedItems));
+        //     } catch (error) {
+        //         console.error('Failed to save scanned items to storage:', error);
+        //     }
+        // };
 
-            saveScannedItems();
+        // saveScannedItems();
+        // }
+        const getItems = async () => {
+            await AsyncStorage.getItem("scannedData").then(data => {
+                const allData = JSON.parse(data);
+                setScannedItems(allData);
+
+                // console.log(data)
+            })
         }
-    }, [route.params]);
+        getItems()
+    }, []);
 
     const handleNext = () => {
         navigation.push('Scanner', { scannedItems });

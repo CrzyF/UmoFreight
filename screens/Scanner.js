@@ -27,8 +27,8 @@ const Scanner = ({ navigation }) => {
       CommonActions.reset({
         index: 1,
         routes: [
-          { name: 'Scanner' }, // Or any other screen you want to navigate to first
-          { name: 'LiveStream' }, // The screen you want to restart
+          { name: 'Scanner' },
+          { name: 'LiveStream' }, 
         ],
       })
     );
