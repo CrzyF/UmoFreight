@@ -5,9 +5,7 @@ import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
 import { Camera, CameraType } from 'expo-camera/legacy';
 import * as Location from 'expo-location';
 import axios from 'axios';
-import * as MediaLibrary from 'expo-media-library';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
-import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LiveStream = ({ navigation, route }) => {
