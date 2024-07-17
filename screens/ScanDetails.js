@@ -49,6 +49,15 @@ const ScanDetails = ({ navigation, route }) => {
         navigation.push('ShipmentPreview', { scannedItems });
     };
 
+    const handleClear = async () => {
+        try {
+            await AsyncStorage.clear();
+            navigation.push('ScanOptions');
+        } catch (error) {
+            console.error('Failed to clear AsyncStorage:', error);
+        }
+    };
+
     const renderItem = ({ item, index }) => (
         <View style={styles.itemContainer}>
             <Image
@@ -79,7 +88,13 @@ const ScanDetails = ({ navigation, route }) => {
             )}
 
             <Text style={styles.of28}>14 of 28</Text>
-            <Text style={styles.totalScanned11}>Total Scanned: {scannedItems.length}</Text>
+
+            <View style={styles.totalScannedContainer}>
+                <Text style={styles.totalScanned11}>Total Scanned: {scannedItems.length}</Text>
+                <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+                    <Text style={styles.clearButtonText}>CLEAR</Text>
+                </TouchableOpacity>
+            </View>
 
             <TouchableOpacity style={[styles.button, styles.nextButton]} onPress={handleNext}>
                 <Text style={styles.buttonText}>NEXT</Text>
@@ -183,15 +198,30 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 50,
     },
+    totalScannedContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 150,
+        marginBottom: 20,
+    },
     totalScanned11: {
         color: Color.colorDarkslategray_100,
-        width: '100%',
-        textAlign: 'center',
         fontFamily: FontFamily.interBold,
         fontWeight: "700",
         fontSize: FontSize.size_mid_4,
-        marginVertical: 60,
-        marginTop: 150,
+        marginRight: 10,
+    },
+    clearButton: {
+        backgroundColor: "#002B45",
+        borderRadius: 10,
+        padding: 10,
+    },
+    clearButtonText: {
+        color: Color.colorWhite,
+        fontSize: FontSize.size_mid_4,
+        fontFamily: FontFamily.interBold,
+        fontWeight: "700",
     },
     listContainer: {
         paddingVertical: 10,
@@ -219,7 +249,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginTop: 10,
-        top: -90
+        top: -90,
     },
 });
 
