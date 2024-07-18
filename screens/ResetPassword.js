@@ -28,7 +28,6 @@ const ResetPassword = ({navigation}) => {
     fetch('https://umopay.com/api/v1/reset-password', requestOptions)
       .then(response => response.text())
       .then(result => {
-        // Handle the result or response accordingly
         console.log(result);
       })
       .catch(error => console.log('error', error));

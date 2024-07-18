@@ -27,7 +27,6 @@ const Login = ({navigation}) => {
     fetch('https://umopay.com/api/v1/login', requestOptions)
       .then(response => response.text())
       .then(result => {
-        // Handle the result or response accordingly
         console.log(result);
       })
       .catch(error => console.log('error', error));

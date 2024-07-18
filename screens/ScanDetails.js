@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#002B45",
         borderRadius: 10,
         padding: 10,
+        marginLeft: 160
     },
     clearButtonText: {
         color: Color.colorWhite,
@@ -207,8 +208,8 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     itemImage: {
-        width: 150,
-        height: 150,
+        width: 90,
+        height: 90,
         borderRadius: 10,
     },
     itemText: {
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginTop: 10,
-        top: -90,
+        top: -150,
     },
 });
 
