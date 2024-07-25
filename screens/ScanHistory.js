@@ -8,8 +8,7 @@ const ScanHistory = ({navigation}) => {
   return (
     <View style={styles.scanHistory}>
       <Text style={styles.umofreightTrackingWill}>
-        UmoFreight tracking will keep 10 days history to keep all your scan
-        history
+        UmoFreight tracking will keep 10 days history to keep all your scan history
       </Text>
 
       <TouchableOpacity style={[styles.phtruckBoldParent, styles.groupParentLayout]} onPress={() => navigation.push('Tracking')}>

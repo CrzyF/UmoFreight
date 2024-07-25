@@ -1,42 +1,46 @@
 import React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButton from '../screens/components/CustomButton'; 
 import { Color } from "../GlobalStyles";
 
 const ScanOptions = ({ navigation }) => {
+    const handlePress = async (title) => {
+        await AsyncStorage.setItem('shipmentStatus', title);
+        navigation.push('Scanner', { title });
+    };
+
     return (
         <View style={styles.scanHistory}>
             <CustomButton
                 title="Warehouse"
-                onPress={() => navigation.push('Scanner')}
+                onPress={() => handlePress('Warehouse')}
                 style={{ top: 177, left: 109, height: 52, width: 176 }}
             />
             <CustomButton
                 title="Container"
-                onPress={() => navigation.push('Scanner')}
+                onPress={() => handlePress('Container')}
                 style={{ top: 277, left: 109, height: 52, width: 176 }}
             />
             <CustomButton
                 title="Pickup"
-                onPress={() => navigation.push('Scanner')}
+                onPress={() => handlePress('Pickup')}
                 style={{ top: 377, left: 109, height: 52, width: 176 }}
             />
             <CustomButton
                 title="Transport"
-                onPress={() => navigation.push('Scanner')}
-                style={{ top: 477,  left: 109, height: 52, width: 176 }}
+                onPress={() => handlePress('Transport')}
+                style={{ top: 477, left: 109, height: 52, width: 176 }}
             />
-
             <CustomButton
                 title="Release"
-                onPress={() => navigation.push('Scanner')}
-                style={{ top: 577,  left: 109, height: 52, width: 176 }}
+                onPress={() => handlePress('Release')}
+                style={{ top: 577, left: 109, height: 52, width: 176 }}
             />
-
             <CustomButton
                 title="Delivery"
-                onPress={() => navigation.push('Scanner')}
-                style={{ top: 677,  left: 109, height: 52, width: 176 }}
+                onPress={() => handlePress('Delivery')}
+                style={{ top: 677, left: 109, height: 52, width: 176 }}
             />
 
             <Image
@@ -85,4 +89,3 @@ const styles = StyleSheet.create({
 });
 
 export default ScanOptions;
- 
