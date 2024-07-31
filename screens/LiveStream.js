@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useRef, useEffect } from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, AppState } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
 import { Camera, CameraType } from 'expo-camera/legacy';
 import * as Location from 'expo-location';
@@ -10,22 +10,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LiveStream = ({ navigation, route }) => {
   const { scannedData, isCameraReady: initialCameraReadyState } = route.params || {};
-  const [appState, setAppState] = useState(AppState.currentState);
-
-  const cameraReady = route.params?.isCameraReady_;
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [locationAddress, setLocationAddress] = useState('');
   const [type, setType] = useState(CameraType.back);
   const cameraRef = useRef(null);
   const [isCameraReady, setIsCameraReady] = useState(initialCameraReadyState || false);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [capturedImage, setCapturedImage] = useState(null);
   const [zoom, setZoom] = useState(0);
   const zoomSensitivity = 0.1;
-  const [permission_, setPermission] = useState("")
-
 
   useEffect(() => {
     (async () => {
@@ -36,41 +28,13 @@ const LiveStream = ({ navigation, route }) => {
         Alert.alert('Permission Denied', 'Please grant camera permission to use the scanner.');
       }
     })();
-  }, []);
-
-  const saveData = async (newData) => {
-
-    await AsyncStorage.getItem("scannedData").then(data => {
-
-      const dataExisting = data == null ? [] : JSON.parse(data);
-
-      const allData = [...dataExisting, newData];
-
-      console.log("No. items" + allData.length)
-      AsyncStorage.setItem("scannedData", JSON.stringify(allData)).then(() => {
-        navigation.replace("ScanDetails")
-      })
-
-      console.log(allData)
-    }).catch(e => {
-      console.log("Error saving..." + e)
-    }).finally(() => {
-      console.log("It's saved...")
-    })
-
-  }
+  }, [requestPermission]);
 
   useEffect(() => {
     (async () => {
-      if (!Location) {
-        console.error('Location is not available. Make sure expo-location is installed.');
-        return;
-      }
-      // saveData()
-
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+        Alert.alert('Permission Denied', 'Please grant location permission to access your location.');
         return;
       }
 
@@ -92,10 +56,9 @@ const LiveStream = ({ navigation, route }) => {
         }
       } catch (error) {
         console.error('Error getting location:', error);
-        setErrorMsg('Error getting location');
+        Alert.alert('Error', 'Error getting location');
       }
     })();
-
   }, []);
 
   const dateToWords = (date) => {
@@ -112,8 +75,6 @@ const LiveStream = ({ navigation, route }) => {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   };
 
-
-
   const handleCaptureImage = async () => {
     if (cameraRef.current) {
       const options = {
@@ -123,30 +84,42 @@ const LiveStream = ({ navigation, route }) => {
 
       const { status } = await requestPermission();
       if (status !== 'granted') {
-        alert('Permission denied');
+        Alert.alert('Permission Denied', 'Please grant camera permission to capture images.');
         return;
       }
 
       const { uri } = await cameraRef.current.takePictureAsync();
 
       try {
-
         const newData = {
           capturedImage: uri,
           time: timeToWords(new Date()),
           date: dateToWords(new Date()),
-          location: locationAddress,
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
           scannedData
-        }
+        };
 
-        saveData(newData)
-        // navigation.replace('ScanDetails');
+        await saveData(newData);
       } catch (error) {
         console.error('Error taking image:', error);
       }
     }
   };
 
+  const saveData = async (newData) => {
+    try {
+      const data = await AsyncStorage.getItem("scannedData");
+      const dataExisting = data ? JSON.parse(data) : [];
+      const allData = [...dataExisting, newData];
+      await AsyncStorage.setItem("scannedData", JSON.stringify(allData));
+      navigation.replace("ScanDetails");
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
 
   const newZoom = (event) => {
     const deltaScale = event.nativeEvent.scale - 1;
@@ -161,15 +134,8 @@ const LiveStream = ({ navigation, route }) => {
         style={styles.liveStreamIcon}
         onCameraReady={() => setIsCameraReady(true)}
         type={type}
-        zoom={zoom}>
-
-        {capturedImage &&
-          <Image
-            source={{ uri: capturedImage }}
-            style={{ width: 100, height: 100 }}
-          />
-        }
-
+        zoom={zoom}
+      >
         <PinchGestureHandler onGestureEvent={newZoom}>
           <View style={styles.controls} collapsable={false} />
         </PinchGestureHandler>
@@ -189,11 +155,11 @@ const LiveStream = ({ navigation, route }) => {
         {location ? (
           <>
             <Text style={styles.march820232}>
-              {timeToWords(currentTime)}
+              {timeToWords(new Date())}
             </Text>
 
             <Text style={styles.march820231}>
-              {dateToWords(new Date(location.timestamp))}
+              {dateToWords(new Date())}
             </Text>
 
             <Text style={styles.march82023}>
@@ -220,22 +186,15 @@ const LiveStream = ({ navigation, route }) => {
             source={require("../assets/flipcamera.png")}
           />
         </TouchableOpacity>
-
-        {/* <Text style={[styles.photo, styles.liveTypo]}>PHOTO</Text> */}
       </Camera>
     );
-
-  }
+  };
 
   return (
     <View style={{ flex: 1 }}>
-      {
-        cameraReady && renderCamera()
-      }
-
+      {isCameraReady && renderCamera()}
     </View>
-  )
-
+  );
 };
 
 const styles = StyleSheet.create({

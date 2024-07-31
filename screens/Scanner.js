@@ -25,13 +25,44 @@ const Scanner = ({ route, navigation }) => {
   }, []);
 
   const handleBarCodeScanned = async ({ type, data }) => {
-    setScanned(true);
-    await playSound();
-    const formattedData = `shipmentStatus: ${title}, ${data}`;
-    console.log(formattedData);
-    navigation.navigate('LiveStream', { scannedData: formattedData, isCameraReady_: true });
+    try {
+      setScanned(true);
+      await playSound();
+    
+      // Split the data by new lines or other delimiters
+      const lines = data.split('\n').map(line => line.trim());
+      
+      // Extract relevant fields
+      const extractedData = {};
+      lines.forEach(line => {
+        const [key, value] = line.split(':').map(part => part.trim());
+        if (key && value) {
+          extractedData[key] = value;
+        }
+      });
+      
+      // Check and parse specific fields
+      const PackageID = extractedData['PackageID'] || 'N/A';
+      const shipid = extractedData['shipid'] || 'N/A';
+      const TotalPackages = extractedData['TotalPackages'] || 'N/A';
+      const PackageCount = extractedData['PackageCount'] || 'N/A';
+    
+      // Ensure all required fields are present
+      if (PackageID === 'N/A' || shipid === 'N/A' || TotalPackages === 'N/A' || PackageCount === 'N/A') {
+        throw new Error("Invalid data format received");
+      }
+    
+      // Format the data for navigation
+      const formattedData = `shipmentStatus: ${title}, PackageID: ${PackageID}, shipid: ${shipid}, TotalPackages: ${TotalPackages}, PackageCount: ${PackageCount}`;
+    
+      // Navigate to the LiveStream page with the filtered data
+      navigation.navigate('LiveStream', { scannedData: formattedData, isCameraReady_: true });
+    } catch (error) {
+      console.error("Error processing scanned data:", error.message);
+    }
   };
-
+    
+  
   const playSound = async () => {
     const { sound } = await Audio.Sound.createAsync(
       require('../assets/beep.mp3')

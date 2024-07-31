@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList, TextInput } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { FontSize, Color, FontFamily } from "../GlobalStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -9,20 +9,32 @@ const ScanDetails = ({ navigation, route }) => {
 
     useEffect(() => {
         const getItems = async () => {
-            await AsyncStorage.getItem("scannedData").then(data => {
-                const allData = JSON.parse(data);
-                setScannedItems(allData);
-            })
-        }
-        getItems()
+            const data = await AsyncStorage.getItem("scannedData");
+            const allData = JSON.parse(data);
+            setScannedItems(allData);
+        };
+        getItems();
     }, []);
 
     const handleNext = () => {
         navigation.push('Scanner', { scannedItems });
     };
 
-    const handleFinish = () => {
-        navigation.push('ShipmentPreview', { scannedItems });
+    const handleFinish = async () => {
+        const locationReference = inputText || 'No location available'; // Default to a string if empty
+
+        // Add locationReference to each scanned item
+        const updatedScannedItems = scannedItems.map(item => ({
+            ...item,
+            locationReference: locationReference,
+        }));
+
+        console.log(updatedScannedItems)
+
+        // Save the updated scannedItems
+        await AsyncStorage.setItem("scannedData", JSON.stringify(updatedScannedItems));
+
+        navigation.push('ShipmentPreview', { updatedScannedItems });
     };
 
     const handleClear = async () => {
@@ -47,54 +59,64 @@ const ScanDetails = ({ navigation, route }) => {
     const lastScannedItem = scannedItems.length > 0 ? scannedItems[scannedItems.length - 1] : null;
 
     return (
-        <View style={styles.container}>
-            <Image
-                style={styles.image1Icon}
-                contentFit="cover"
-                source={require("../assets/image-1.png")}
-            />
+        <KeyboardAvoidingView 
+            style={styles.container} 
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <View style={styles.innerContainer}>
+                <Image
+                    style={styles.image1Icon}
+                    contentFit="cover"
+                    source={require("../assets/image-1.png")}
+                />
 
-            {lastScannedItem && (
-                <>
-                    <Text style={[styles.march82023, styles.march82023Typo]}>
-                        {lastScannedItem.date} {lastScannedItem.time}
-                    </Text>
-                    <Text style={styles.onyankeleStreet}>{lastScannedItem.location}</Text>
-                </>
-            )}
+                {lastScannedItem && (
+                    <>
+                        <Text style={[styles.march82023, styles.march82023Typo]}>
+                            {lastScannedItem.date} {lastScannedItem.time}
+                        </Text>
+                    </>
+                )}
 
-            <Text style={styles.of28}>14 of 28</Text>
+                <Text style={styles.onyankeleStreet}>{scannedItems.shipmentStatus}</Text>
 
-            <View style={styles.totalScannedContainer}>
-                <Text style={styles.totalScanned11}>Total Scanned: {scannedItems.length}</Text>
-                <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
-                    <Text style={styles.clearButtonText}>CLEAR</Text>
-                </TouchableOpacity>
+                <Text style={styles.of28}>14 of 28</Text>
+
+                <View style={styles.totalScannedContainer}>
+                    <Text style={styles.totalScanned11}>Total Scanned: {scannedItems.length}</Text>
+                    <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+                        <Text style={styles.clearButtonText}>CLEAR</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <FlatList
+                    data={scannedItems}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    horizontal={true}
+                    contentContainerStyle={styles.listContainer}
+                />
+
+                <TextInput
+                    style={styles.textInput}
+                    placeholder="Enter additional information"
+                    value={inputText}
+                    onChangeText={setInputText}
+                />
+
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={[styles.button, styles.nextButton]} onPress={handleNext}>
+                        <Text style={styles.buttonText}>NEXT</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.button, styles.finishButton]} onPress={handleFinish}>
+                        <Text style={styles.buttonText}>FINISH</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-
-            <TouchableOpacity style={[styles.button, styles.nextButton]} onPress={handleNext}>
-                <Text style={styles.buttonText}>NEXT</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.button, styles.finishButton]} onPress={handleFinish}>
-                <Text style={styles.buttonText}>FINISH</Text>
-            </TouchableOpacity>
-
-            <FlatList
-                data={scannedItems}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal={true}
-                contentContainerStyle={styles.listContainer}
-            />
-
-            <TextInput
-                style={styles.textInput}
-                placeholder="Enter additional information"
-                value={inputText}
-                onChangeText={setInputText}
-            />
-        </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -132,9 +154,22 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        justifyContent: 'space-between',
+    },
+    innerContainer: {
+        flex: 1,
         padding: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingTop: 20, // Added paddingTop to space out buttons from other content
+        marginBottom: 20,
     },
     button: {
         width: 150,
@@ -142,15 +177,11 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: "center",
         alignItems: "center",
-        position: "absolute",
-        bottom: 30,
     },
     nextButton: {
-        left: 20,
         backgroundColor: "#F79520",
     },
     finishButton: {
-        right: 20,
         backgroundColor: Color.colorLimegreen,
     },
     buttonText: {
@@ -226,7 +257,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginTop: 10,
-        top: -150,
     },
 });
 

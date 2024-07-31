@@ -1,11 +1,90 @@
-import React, { useState } from "react";
-import { Text, StyleSheet, View, Image, TouchableOpacity, FlatList } from "react-native";
-import Dialog from "react-native-dialog";
+import React, { useState, useEffect } from "react";
+import { Text, StyleSheet, View, Image, TouchableOpacity, FlatList, Alert } from "react-native";
 import { Color, FontFamily, FontSize, Border } from "../GlobalStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ShipmentPreview = ({ navigation, route }) => {
-  const { scannedItems } = route.params;
-  const [isSuccessDialogVisible, setSuccessDialogVisible] = useState(false);
+const extractShipmentStatus = (scannedData) => {
+  const match = scannedData.match(/shipmentStatus:\s*([^,]+)/);
+  return match ? match[1].trim() : 'N/A';
+};
+
+const extractPackageID = (scannedData) => {
+  const match = scannedData.match(/PackageID:\s*(\d+)/);
+  return match ? match[1] : 'N/A';
+};
+
+const extractTotalPackages = (scannedData) => {
+  const match = scannedData.match(/TotalPackages:\s*(\d+)/);
+  return match ? match[1] : 'N/A';
+};
+
+const extractPackageCount = (scannedData) => {
+  const match = scannedData.match(/PackageCount:\s*(\d+)/);
+  return match ? match[1] : 'N/A';
+};
+
+const extractShipId = (scannedData) => {
+  const match = scannedData.match(/shipid:\s*(\d+)/);
+  return match ? match[1] : 'N/A';
+};
+
+const ShipmentPreview = ({ navigation }) => {
+  const [scannedItems, setScannedItems] = useState([]);
+
+  useEffect(() => {
+    const fetchAsyncStorageData = async () => {
+      try {
+        const scannedData = await AsyncStorage.getItem("scannedData");
+        if (scannedData) {
+          const parsedData = JSON.parse(scannedData);
+          setScannedItems(parsedData);
+        }
+      } catch (error) {
+        console.error('Error fetching data from AsyncStorage:', error);
+      }
+    };
+
+    fetchAsyncStorageData();
+  }, []);
+
+  const sendTrackingData = async () => {
+    try {
+      const scannedData = await AsyncStorage.getItem("scannedData");
+      const allData = JSON.parse(scannedData);
+
+      let formdata = new FormData();
+      formdata.append("shipmentId", extractShipId(allData[0].scannedData) || "N/A");
+      formdata.append("packageId", extractPackageID(allData[0].scannedData) || "N/A");
+      formdata.append("locations", JSON.stringify(allData.map(item => item.location)));
+      formdata.append("dateTimes", JSON.stringify(allData.map(item => item.date + 'T' + item.time + 'Z')));
+      formdata.append("images", allData.map(item => ({ uri: item.capturedImage, name: 'image.jpg', type: 'image/jpeg' })));
+      formdata.append("numberOfPackages", extractTotalPackages(allData[0].scannedData).toString() || "N/A");
+      formdata.append("shipmentStatus", extractShipmentStatus(allData[0].scannedData) || "N/A");
+      formdata.append("shipperId", "20");
+
+      const myHeaders = new Headers();
+      myHeaders.append("x-auth-token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjIwLCJpYXQiOjE3MjI0MjIxNDB9.oQ6RuR_oaX3jaqiNYQeA2IXvmRCC0WNqalS3ZhCDtIw");
+
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      const response = await fetch("https://dev.umofreight.com/api/v1/auth/shipment_information/tracking", requestOptions);
+
+      if (response.ok) {
+        Alert.alert("Success", "Tracking Updated Successfully");
+      } else {
+        Alert.alert("Failure", "Failed To Update Tracking");
+        console.error('Failed to send tracking data:', response.statusText);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed To Update Tracking");
+      console.error('Error sending tracking data:', error);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -14,18 +93,19 @@ const ShipmentPreview = ({ navigation, route }) => {
         <View style={styles.groupChild} />
         <Image
           style={styles.groupItem}
-          contentFit="cover"
           source={{ uri: item.capturedImage }}
         />
         <Text style={styles.locatedLondon}>
-          Located: {item.location}
+          {extractShipmentStatus(item.scannedData)}
         </Text>
         <Text style={styles.expectedArrival}>
           {item.date} {item.time}
         </Text>
-        <Text style={styles.of28}>3 of 28</Text>
+        <Text style={styles.of28}>
+          {extractPackageCount(item.scannedData)} of {extractTotalPackages(item.scannedData)}
+        </Text>
         <Text style={styles.ty39yuh980ydgifgg}>
-          45TY39YUH980YDGIFGG
+          Package ID: {extractPackageID(item.scannedData)}
         </Text>
       </View>
     </View>
@@ -46,32 +126,20 @@ const ShipmentPreview = ({ navigation, route }) => {
 
       <Image
         style={styles.image1Icon}
-        contentFit="cover"
         source={require("../assets/image-1.png")}
       />
       <Text style={styles.umofreightAutoTracker}>
         UmoFreight Auto Tracker
       </Text>
 
-      <TouchableOpacity style={styles.delayedPackagesChild} onPress={isSuccessDialogVisible}>
+      <TouchableOpacity style={styles.delayedPackagesChild} onPress={sendTrackingData}>
         <Image
-          style={{ transform: [{ scale: 0.3 }] }}  
-          contentFit="cover"
+          style={{ transform: [{ scale: 0.3 }] }}
           source={require("../assets/rectangle-72.png")}
         />
       </TouchableOpacity>
 
       <Text style={styles.submit}>SUBMIT</Text>
-
-      <Text style={styles.of285}>{scannedItems.length} of {scannedItems.length}</Text>
-
-      <Dialog.Container visible={isSuccessDialogVisible}>
-        <Dialog.Title>Success</Dialog.Title>
-        <Dialog.Description>
-          Tracking Successfully Submitted
-        </Dialog.Description>
-        <Dialog.Button label="Done" onPress={() => navigation.push('ScanHistory')} />
-      </Dialog.Container>
     </View>
   );
 };
@@ -90,9 +158,9 @@ const styles = StyleSheet.create({
     left: "50%",
   },
   listContainer: {
-    paddingTop: 200, 
+    paddingTop: 200,
     paddingHorizontal: 15,
-    paddingBottom: 100, 
+    paddingBottom: 100,
   },
   itemContainer: {
     marginBottom: 15,
@@ -224,6 +292,12 @@ const styles = StyleSheet.create({
     height: 812,
     overflow: "hidden",
     flex: 1,
+  },
+  loadingIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -25 }, { translateY: -25 }],
   },
 });
 
