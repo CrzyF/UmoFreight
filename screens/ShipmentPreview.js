@@ -75,9 +75,9 @@ const ShipmentPreview = ({ navigation }) => {
       const response = await fetch("https://dev.umofreight.com/api/v1/auth/shipment_information/tracking", requestOptions);
 
       if (response.ok) {
-        Alert.alert("Success", "Tracking Updated Successfully");
+        Alert.alert("Success", "Tracking Status Updated");
       } else {
-        Alert.alert("Failure", "Failed To Update Tracking");
+        Alert.alert("Error", "Failed To Update Tracking");
         console.error('Failed to send tracking data:', response.statusText);
       }
     } catch (error) {
