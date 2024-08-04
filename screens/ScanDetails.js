@@ -21,7 +21,7 @@ const ScanDetails = ({ navigation, route }) => {
     };
 
     const handleFinish = async () => {
-        const locationReference = inputText || 'No location available'; // Default to a string if empty
+        const locationReference = inputText || 'N/A'; // Default to a string if empty
 
         // Add locationReference to each scanned item
         const updatedScannedItems = scannedItems.map(item => ({
@@ -81,7 +81,7 @@ const ScanDetails = ({ navigation, route }) => {
 
                 <Text style={styles.onyankeleStreet}>{scannedItems.shipmentStatus}</Text>
 
-                <Text style={styles.of28}>14 of 28</Text>
+                <Text style={styles.of28}>{scannedItems.length} of {scannedItems.length}</Text>
 
                 <View style={styles.totalScannedContainer}>
                     <Text style={styles.totalScanned11}>Total Scanned: {scannedItems.length}</Text>
