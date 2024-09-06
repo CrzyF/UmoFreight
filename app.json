@@ -16,7 +16,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "io.expo.client",
+      "runtimeVersion": "1.0.0",
+      "bundleIdentifier": "com.domainname.umotrack",
       "infoPlist": {
         "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We need access to your location to verify product location.",
@@ -26,6 +27,7 @@
       }
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff",
