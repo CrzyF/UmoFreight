@@ -30,14 +30,7 @@
       "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "permissions": [
-          "CAMERA",
-          "READ_EXTERNAL_STORAGE",
-          "WRITE_EXTERNAL_STORAGE",
-          "ACCESS_COARSE_LOCATION",
-          "ACCESS_FINE_LOCATION"
-        ]
+        "backgroundColor": "#ffffff"
       },
       "package": "com.c75y_f.umofreight",
       "permissions": [
